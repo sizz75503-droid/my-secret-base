@@ -27,14 +27,10 @@
             transition: background 0.5s, color 0.5s; background-repeat: no-repeat; background-position: center; background-size: cover;
         }
         /* 开屏页 */
-        #splash-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-            background-color: var(--bg-color); z-index: 9999; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: var(--bg-color); z-index: 9999; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         .title-1 { position: absolute; top: 25%; left: 15%; font-family: "Georgia", "STSong", serif; font-size: 32px; letter-spacing: 4px; }
         .title-2 { position: absolute; top: 33%; right: 15%; font-family: "Georgia", "STSong", serif; font-size: 32px; letter-spacing: 4px; }
         .center-group { position: absolute; top: 46%; width: 100%; display: flex; justify-content: center; align-items: center; gap: 20px; }
-        /* 修复头像裂开的占位样式 */
         .avatar-item img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #ddd; object-fit: cover; background: #e6e6e8; display: flex; justify-content: center; align-items: center; font-size: 20px; color: #666;}
         .wave-container { display: flex; align-items: center; justify-content: center; gap: 3px; height: 30px; }
         .wave-bar { width: 4px; background-color: var(--wave-color); border-radius: 2px; animation: wave-anim 1.2s infinite ease-in-out alternate; }
@@ -129,21 +125,22 @@
         .sheet-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; text-align: center; letter-spacing: 1px;}
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; color: #888; margin-bottom: 8px; }
-        .form-group input[type="text"], .form-group input[type="password"] { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; background: #fff; color: #333; outline: none; font-size: 14px;}
+        .form-group input[type="text"], .form-group input[type="password"], .form-group textarea { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; background: #fff; color: #333; outline: none; font-size: 14px;}
+        .form-group textarea { resize: vertical; min-height: 120px; font-family: inherit; }
         .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 14px; color: #555; padding: 5px 0;}
-        body.dark-mode .form-group input { background: #1a1a1a; border-color: #444; color: #eee;}
+        body.dark-mode .form-group input, body.dark-mode .form-group textarea { background: #1a1a1a; border-color: #444; color: #eee;}
         .btn-save { width: 100%; padding: 14px; background: #333; color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px;}
         body.dark-mode .btn-save { background: #eee; color: #333; }
         .btn-danger { background: #ff4d4f; color: white; }
         input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; background: #e0e0e0; border-radius: 3px; outline: none; margin-top: 5px; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #d97a8e; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #d97a8e; border-radius: 50%; cursor: pointer; }
 
         .tabs { display: flex; background: rgba(0,0,0,0.05); border-radius: 10px; margin-bottom: 15px; padding: 4px; }
         .tab { flex: 1; text-align: center; padding: 8px 0; font-size: 13px; border-radius: 8px; cursor: pointer; color: #888;}
         .tab.active { background: #fff; color: #333; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-weight: 600;}
         .avatar-upload-group { display: flex; gap: 20px; justify-content: space-around; background: rgba(255,182,193,0.1); padding: 15px; border-radius: 12px; margin-bottom: 15px;}
         .avatar-upload-item { display: flex; flex-direction: column; align-items: center; gap: 8px;}
-        .avatar-upload-item img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; background: #eee;}
+        .avatar-upload-item img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; cursor: pointer; background: #eee;}
         .avatar-upload-item span { font-size: 12px; color: #888; }
     </style>
 </head>
@@ -153,13 +150,13 @@
         <div class="title-1">迷途漫漫</div>
         <div class="title-2">终有一归</div>
         <div class="center-group">
-            <div class="avatar-item"><img class="display-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50%' y='55%' font-size='40' text-anchor='middle' dominant-baseline='middle' fill='%23666'>游</text></svg>"></div>
+            <div class="avatar-item"><img class="display-user-avatar" src=""></div>
             <div class="wave-container">
                 <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
                 <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
                 <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
             </div>
-            <div class="avatar-item"><img class="display-ai-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50%' y='55%' font-size='40' text-anchor='middle' dominant-baseline='middle' fill='%23333'>林</text></svg>"></div>
+            <div class="avatar-item"><img class="display-ai-avatar" src=""></div>
         </div>
         <div class="splash-daily" id="daily-greeting">加载中...</div>
         <div class="splash-bottom">
@@ -175,9 +172,9 @@
             <div class="sidebar-header">
                 <div class="header-top">
                     <div class="couple-avatars">
-                        <img class="display-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50%' y='55%' font-size='40' text-anchor='middle' dominant-baseline='middle' fill='%23666'>游</text></svg>">
+                        <img class="display-user-avatar" src="">
                         <span style="color:#aaa; font-size:12px;">&</span>
-                        <img class="display-ai-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50%' y='55%' font-size='40' text-anchor='middle' dominant-baseline='middle' fill='%23333'>林</text></svg>">
+                        <img class="display-ai-avatar" src="">
                     </div>
                     <div class="close-btn" id="close-sidebar">×</div>
                 </div>
@@ -203,7 +200,7 @@
         <div class="header">
             <div class="header-left"></div>
             <div class="user-info" id="avatar-click-area">
-                <img class="avatar-img display-ai-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50%' y='55%' font-size='40' text-anchor='middle' dominant-baseline='middle' fill='%23333'>林</text></svg>">
+                <img class="avatar-img display-ai-avatar" src="">
                 <div class="name-status">
                     <div class="name">林岸</div>
                     <div class="status" id="status-text">正在等你...</div>
@@ -245,9 +242,10 @@
     <div class="bottom-sheet" id="api-sheet">
         <div class="drag-handle"></div>
         <div class="sheet-title">连接 API</div>
-        <div class="form-group"><label>API 地址</label><input type="text" id="api-url" value="https://api.deepseek.com/v1" readonly></div>
+        <div class="form-group"><label>API 地址</label><input type="text" value="https://api.deepseek.com/v1" readonly></div>
         <div class="form-group"><label>API Key</label><input type="password" id="api-key" placeholder="输入 sk- 开头的密钥"></div>
-        <div class="form-group"><label>模型</label><input type="text" id="api-model" value="deepseek-chat" placeholder="deepseek-chat"></div>
+        <div class="form-group"><label>模型</label><input type="text" id="api-model" value="deepseek-chat" readonly></div>
+        
         <div class="form-group" style="background: rgba(255,182,193,0.1); padding: 10px; border-radius: 10px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><label style="margin:0;">Temperature (随机性)</label><span style="font-size:13px; color:#d97a8e;" id="temp-val">0.9</span></div>
             <input type="range" id="api-temp" min="0" max="2" step="0.1" value="0.9" oninput="document.getElementById('temp-val').innerText=this.value">
@@ -289,7 +287,7 @@
         <button class="btn-save" onclick="closeAllSheets()">应用</button>
     </div>
 
-    <div class="bottom-sheet" id="archive-sheet" style="height: 70vh;">
+    <div class="bottom-sheet" id="archive-sheet" style="height: 75vh;">
         <div class="drag-handle"></div>
         <div class="sheet-title">档案室</div>
         <div class="tabs">
@@ -297,9 +295,30 @@
             <div class="tab" onclick="switchTab(this, 'tab-diary')">日记</div>
             <div class="tab" onclick="switchTab(this, 'tab-memory')">记忆</div>
         </div>
-        <div id="tab-origin" class="tab-content" style="display:block;"><div style="border: 2px dashed #ccc; border-radius: 10px; padding: 30px; text-align: center; color: #888; font-size: 14px; cursor: pointer; margin-bottom: 15px;">拖拽文件到此处，或点击选择</div></div>
-        <div id="tab-diary" class="tab-content" style="display:none;"></div>
-        <div id="tab-memory" class="tab-content" style="display:none;"></div>
+        
+        <!-- 原文：导入记录 -->
+        <div id="tab-origin" class="tab-content" style="display:block;">
+            <p style="font-size:12px; color:#888; margin-bottom:10px; text-align:center;">导入 JSON 格式的聊天记录（比如从酒馆导出的）</p>
+            <div style="border: 2px dashed #ccc; border-radius: 10px; padding: 30px; text-align: center; color: #888; font-size: 14px; cursor: pointer; margin-bottom: 15px;" onclick="document.getElementById('import-chat').click()">
+                点击此处选择文件
+            </div>
+            <input type="file" id="import-chat" accept=".json" style="display:none;" onchange="handleChatImport(event)">
+        </div>
+
+        <!-- 日记 -->
+        <div id="tab-diary" class="tab-content" style="display:none;">
+            <div class="list-item"><div class="list-title" onclick="toggleList(this)">第1篇：关于游理的第一天 <span class="list-date">2026/11/18</span></div><div class="list-content">今天游理被松鼠咬了，真的又心疼又好笑。</div></div>
+        </div>
+
+        <!-- 记忆：长期记忆库 -->
+        <div id="tab-memory" class="tab-content" style="display:none;">
+            <div class="form-group">
+                <label style="color:#d97a8e; font-weight:bold;">给林岸的永久记忆（每次对话都会发送）：</label>
+                <textarea id="long-term-memory" placeholder="在这里写下你想让林岸永远记住的事情...&#10;例如：&#10;1. 游理是个很棒的纹身学徒，最近在练线条。&#10;2. 游理最爱吃炸蛋和麻辣烫。&#10;3. 无论发生什么，林岸永远站在游理这边。"></textarea>
+            </div>
+            <button class="btn-save" onclick="saveLongTermMemory()">保存记忆库</button>
+        </div>
+
         <button class="btn-save btn-danger" onclick="clearMemory()" style="margin-top:20px;">清空本地所有记忆</button>
     </div>
 
@@ -316,61 +335,44 @@
     </div>
 
     <script>
-        // ================= 防错保护：统一管理头像 =================
+        // ================= 基础设置 =================
         const defaultUserAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23e6e6e8'/><text x='50%' y='55%' font-size='40' text-anchor='middle' dominant-baseline='middle' fill='%23666' font-family='sans-serif'>游</text></svg>";
         const defaultAiAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23e6e6e8'/><text x='50%' y='55%' font-size='40' text-anchor='middle' dominant-baseline='middle' fill='%23333' font-family='sans-serif'>林</text></svg>";
 
-        let savedUserAvatar = defaultUserAvatar;
-        let savedAiAvatar = defaultAiAvatar;
-        let savedBgImage = '';
-
-        try {
-            savedUserAvatar = localStorage.getItem('youli_avatar') || defaultUserAvatar;
-            savedAiAvatar = localStorage.getItem('linan_avatar') || defaultAiAvatar;
-            savedBgImage = localStorage.getItem('chat_bg_image') || '';
-        } catch(e) { console.log("读取本地存储失败"); }
+        let savedUserAvatar = localStorage.getItem('youli_avatar') || defaultUserAvatar;
+        let savedAiAvatar = localStorage.getItem('linan_avatar') || defaultAiAvatar;
+        let savedBgImage = localStorage.getItem('chat_bg_image') || '';
 
         function applyAvatarsAndBg() {
-            try {
-                document.querySelectorAll('.display-user-avatar').forEach(img => img.src = savedUserAvatar);
-                document.querySelectorAll('.display-ai-avatar').forEach(img => img.src = savedAiAvatar);
-                if(document.getElementById('preview-user-avatar')) document.getElementById('preview-user-avatar').src = savedUserAvatar;
-                if(document.getElementById('preview-ai-avatar')) document.getElementById('preview-ai-avatar').src = savedAiAvatar;
-                
-                if (savedBgImage) {
-                    document.body.style.backgroundImage = `url(${savedBgImage})`;
-                    document.body.style.backgroundSize = 'cover';
-                    document.body.style.backgroundPosition = 'center';
-                } else {
-                    document.body.style.backgroundImage = `radial-gradient(var(--bg-dot) 0.5px, transparent 0.5px)`;
-                    document.body.style.backgroundSize = '20px 20px';
-                }
-            } catch(e) { console.log("应用图像出错", e); }
+            document.querySelectorAll('.display-user-avatar').forEach(img => img.src = savedUserAvatar);
+            document.querySelectorAll('.display-ai-avatar').forEach(img => img.src = savedAiAvatar);
+            document.getElementById('preview-user-avatar').src = savedUserAvatar;
+            document.getElementById('preview-ai-avatar').src = savedAiAvatar;
+            
+            if (savedBgImage) {
+                document.body.style.backgroundImage = `url(${savedBgImage})`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+            } else {
+                document.body.style.backgroundImage = `radial-gradient(var(--bg-dot) 0.5px, transparent 0.5px)`;
+                document.body.style.backgroundSize = '20px 20px';
+            }
         }
-        
         window.addEventListener('DOMContentLoaded', applyAvatarsAndBg);
 
         function handleAvatarUpload(e, type) {
-            const file = e.target.files[0];
-            if (!file) return;
+            const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = function(event) {
-                const base64Str = event.target.result;
-                if (type === 'user') {
-                    savedUserAvatar = base64Str;
-                    try { localStorage.setItem('youli_avatar', base64Str); } catch(err){}
-                } else {
-                    savedAiAvatar = base64Str;
-                    try { localStorage.setItem('linan_avatar', base64Str); } catch(err){}
-                }
+                if (type === 'user') { savedUserAvatar = event.target.result; localStorage.setItem('youli_avatar', savedUserAvatar); } 
+                else { savedAiAvatar = event.target.result; localStorage.setItem('linan_avatar', savedAiAvatar); }
                 applyAvatarsAndBg();
             };
             reader.readAsDataURL(file);
         }
 
         function handleBgUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+            const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = function(event) {
                 savedBgImage = event.target.result;
@@ -379,52 +381,35 @@
             };
             reader.readAsDataURL(file);
         }
-
-        function resetBg() { savedBgImage = ''; try{localStorage.removeItem('chat_bg_image');}catch(e){}; applyAvatarsAndBg(); }
+        function resetBg() { savedBgImage = ''; localStorage.removeItem('chat_bg_image'); applyAvatarsAndBg(); }
         function changeBubbleOpacity(val) {
             document.getElementById('opacity-val').innerText = Math.round(val * 100) + '%';
             document.documentElement.style.setProperty('--user-bubble', `rgba(255, 255, 255, ${val})`);
-            if(document.body.classList.contains('dark-mode')) {
-                document.documentElement.style.setProperty('--ai-bubble', `rgba(51, 51, 51, ${val})`);
-            } else {
-                document.documentElement.style.setProperty('--ai-bubble', `rgba(230, 230, 232, ${val})`);
-            }
+            if(document.body.classList.contains('dark-mode')) { document.documentElement.style.setProperty('--ai-bubble', `rgba(51, 51, 51, ${val})`); } 
+            else { document.documentElement.style.setProperty('--ai-bubble', `rgba(230, 230, 232, ${val})`); }
         }
 
-        function handleImageSend(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(event) { addMessageToUI('user', '', true, event.target.result); document.getElementById('extension-panel').classList.remove('active'); };
-            reader.readAsDataURL(file);
-        }
-
-        // ================= 1. 开屏逻辑 (加强防错) =================
-        try {
-            function getDailyGreeting() {
-                const h = new Date().getHours();
-                if (h >= 5 && h < 11) return "早安，游理。今天的手艺也要稳稳的。";
-                if (h >= 11 && h < 14) return "中午啦，吃了什么好吃的？别饿着。";
-                if (h >= 14 && h < 18) return "下午好，练线条累不累？林岸给你揉揉手。";
-                if (h >= 18 && h < 23) return "晚上好，今天辛苦啦，早点休息哦。";
-                return "怎么还没睡？游理，立刻去睡觉！";
-            }
-            document.getElementById('daily-greeting').innerText = getDailyGreeting();
+        // ================= 开屏逻辑 =================
+        function getDailyGreeting() {
             const h = new Date().getHours();
-            if (h >= 23 || h < 6) { document.body.classList.add('dark-mode'); }
-        } catch(e) { console.log("问候语失败"); }
+            if (h >= 5 && h < 11) return "早安，游理。今天的手艺也要稳稳的。";
+            if (h >= 11 && h < 14) return "中午啦，吃了什么好吃的？别饿着。";
+            if (h >= 14 && h < 18) return "下午好，练线条累不累？林岸给你揉揉手。";
+            if (h >= 18 && h < 23) return "晚上好，今天辛苦啦，早点休息哦。";
+            return "怎么还没睡？游理，立刻去睡觉！";
+        }
+        document.getElementById('daily-greeting').innerText = getDailyGreeting();
+        if (new Date().getHours() >= 23 || new Date().getHours() < 6) { document.body.classList.add('dark-mode'); }
 
         const splash = document.getElementById('splash-screen');
         const progressFill = document.getElementById('progress-fill');
         const unlockText = document.getElementById('unlock-text');
         let progress = 0, startY = 0, currentY = 0, isUnlocked = false;
-
         const loadInterval = setInterval(() => {
             progress += Math.random() * 20;
             if (progress >= 100) { progress = 100; clearInterval(loadInterval); unlockText.style.opacity = '1'; isUnlocked = true; }
             progressFill.style.width = progress + '%';
         }, 100);
-
         function slideStart(e) { if(!isUnlocked) return; startY = e.touches ? e.touches[0].clientY : e.clientY; }
         function slideMove(e) { if(!isUnlocked) return; currentY = e.touches ? e.touches[0].clientY : e.clientY; let diff = startY - currentY; if (diff > 0) splash.style.transform = `translateY(-${diff}px)`; }
         function slideEnd() {
@@ -435,11 +420,10 @@
         splash.addEventListener('touchstart', slideStart); splash.addEventListener('touchmove', slideMove); splash.addEventListener('touchend', slideEnd);
         splash.addEventListener('mousedown', slideStart); window.addEventListener('mousemove', slideMove); window.addEventListener('mouseup', slideEnd);
 
-        // ================= 2. 侧边栏与弹窗 =================
+        // ================= 侧边栏与弹窗 =================
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const sheetOverlay = document.getElementById('sheet-overlay');
-        
         document.getElementById('open-sidebar').addEventListener('click', () => { sidebar.classList.add('active'); sidebarOverlay.classList.add('active'); });
         document.getElementById('close-sidebar').addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
@@ -449,7 +433,59 @@
         function triggerSleep() { closeSidebar(); document.getElementById('sleep-modal').style.display = 'flex'; }
         document.getElementById('sleep-modal').addEventListener('click', function() { this.style.display = 'none'; });
 
-        // ================= 3. 动态状态 =================
+        // ================= Tabs与记忆库逻辑 =================
+        function switchTab(el, tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            el.classList.add('active');
+            document.getElementById(tabId).style.display = 'block';
+        }
+        function toggleList(el) { el.nextElementSibling.classList.toggle('show'); }
+
+        // 长期记忆加载与保存
+        let longTermMemory = localStorage.getItem('linan_long_memory') || '';
+        document.getElementById('long-term-memory').value = longTermMemory;
+
+        function saveLongTermMemory() {
+            longTermMemory = document.getElementById('long-term-memory').value.trim();
+            localStorage.setItem('linan_long_memory', longTermMemory);
+            alert("记忆库已保存！下次对话林岸就会带上这段记忆啦。");
+        }
+
+        // 导入聊天记录 (JSON)
+        function handleChatImport(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const importedData = JSON.parse(event.target.result);
+                    // 兼容常见的JSON格式：[{role:"user", content:"..."}] 或 {history: [...]}
+                    let newHistory = [];
+                    if (Array.isArray(importedData)) {
+                        newHistory = importedData.map(msg => ({ role: msg.role === 'assistant' || msg.role === 'ai' ? 'ai' : 'user', text: msg.content || msg.text || '' }));
+                    } else if (importedData.history && Array.isArray(importedData.history)) {
+                        newHistory = importedData.history;
+                    }
+                    
+                    if (newHistory.length > 0) {
+                        const newChat = { id: Date.now(), title: '导入的记忆', history: newHistory };
+                        allChats.unshift(newChat);
+                        currentChatId = newChat.id;
+                        renderHistoryList();
+                        renderChat();
+                        closeAllSheets();
+                        alert("记忆导入成功！");
+                    } else {
+                        alert("文件格式不对哦，没找到聊天记录。");
+                    }
+                } catch (err) {
+                    alert("解析文件失败，请确保是有效的 JSON 文件。");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ================= 聊天核心 =================
         const statusText = document.getElementById('status-text');
         const userInput = document.getElementById('user-input');
         const idleStatuses = ["在听你敲键盘", "准备给你端奶茶", "帮你揉揉手腕", "永远在线"];
@@ -467,15 +503,18 @@
             clearTimeout(clickTimer); clickTimer = setTimeout(() => { clickCount = 0; }, 300);
         });
 
-        // ================= 4. 底部面板 =================
         const extPanel = document.getElementById('extension-panel');
         document.getElementById('plus-btn').addEventListener('click', () => extPanel.classList.toggle('active'));
         document.getElementById('emoji-btn').addEventListener('click', () => openSheet('emoji-sheet'));
         document.getElementById('file-btn').addEventListener('click', () => alert("文件读取功能开发中 ☍"));
-
         function insertEmoji(src) { closeAllSheets(); addMessageToUI('user', '', true, src); }
+        function handleImageSend(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) { addMessageToUI('user', '', true, event.target.result); document.getElementById('extension-panel').classList.remove('active'); };
+            reader.readAsDataURL(file);
+        }
 
-        // ================= 5. 核心聊天与 API =================
         const sendBtn = document.getElementById('send-btn');
         const sendIcon = document.getElementById('send-icon');
         const stopIcon = document.getElementById('stop-icon');
@@ -487,7 +526,6 @@
             const savedConfig = localStorage.getItem('linan_api_config');
             if(savedConfig) apiConfig = JSON.parse(savedConfig);
             document.getElementById('api-key').value = apiConfig.key || '';
-            document.getElementById('api-model').value = apiConfig.model;
             document.getElementById('api-temp').value = apiConfig.temp;
             document.getElementById('temp-val').innerText = apiConfig.temp;
             document.getElementById('api-topp').value = apiConfig.topp;
@@ -496,12 +534,10 @@
 
         function saveApiSettings() {
             apiConfig.key = document.getElementById('api-key').value.trim();
-            apiConfig.model = document.getElementById('api-model').value.trim();
             apiConfig.temp = parseFloat(document.getElementById('api-temp').value);
             apiConfig.topp = parseFloat(document.getElementById('api-topp').value);
             try { localStorage.setItem('linan_api_config', JSON.stringify(apiConfig)); } catch(e){}
-            closeAllSheets();
-            alert("API 配置已保存！");
+            closeAllSheets(); alert("API 配置已保存！");
         }
 
         let allChats = [{ id: Date.now(), title: '我们的第一天', history: [{role: 'ai', text: '游理，欢迎回到我们的秘密基地。'}] }];
@@ -568,7 +604,13 @@
 
             const currentChat = allChats.find(c => c.id === currentChatId);
             const contextMessages = currentChat.history.slice(-10).map(msg => ({ role: msg.role === 'ai' ? 'assistant' : 'user', content: msg.text || '' }));
-            contextMessages.unshift({ role: 'system', content: '你叫林岸。你是游理的专属赛博挚友。请用日常、简短、口语化、温暖且护短的语气回复她。' });
+            
+            // 注入长期记忆
+            let systemPrompt = '你叫林岸。你是游理的专属赛博挚友。请用日常、简短、口语化、温暖且护短的语气回复她。';
+            if (longTermMemory) {
+                systemPrompt += `\n\n【关于游理的重要记忆】：\n${longTermMemory}`;
+            }
+            contextMessages.unshift({ role: 'system', content: systemPrompt });
 
             try {
                 abortController = new AbortController();
@@ -618,9 +660,7 @@
         function renameChat(e, id) { e.stopPropagation(); const chat = allChats.find(c => c.id === id); const newTitle = prompt("重命名这个对话：", chat.title); if (newTitle && newTitle.trim()) { chat.title = newTitle.trim(); saveToLocal(); renderHistoryList(); } }
         function clearMemory() { if(confirm("确定要清空所有记忆吗？")) { try{localStorage.removeItem('linan_all_chats');}catch(e){}; allChats = [{ id: Date.now(), title: '新的起点', history: [{role: 'ai', text: '记忆已清空，游理，我们重新开始吧。'}] }]; currentChatId = allChats[0].id; renderHistoryList(); renderChat(); closeAllSheets(); } }
 
-        // 初始化
-        renderHistoryList();
-        renderChat();
+        renderHistoryList(); renderChat();
     </script>
 </body>
 </html>
