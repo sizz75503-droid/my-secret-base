@@ -461,31 +461,56 @@
 
         // 导入聊天记录 (JSON)
         function handleChatImport(e) {
+        function handleChatImport(e) {
             const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = function(event) {
                 try {
                     const importedData = JSON.parse(event.target.result);
-                    // 兼容常见的JSON格式：[{role:"user", content:"..."}] 或 {history: [...]}
                     let newHistory = [];
-                    if (Array.isArray(importedData)) {
+                    
+                    // 专门解析你刚发的那种带 fragments 的格式
+                    if (importedData.messages && Array.isArray(importedData.messages)) {
+                        importedData.messages.forEach(msg => {
+                            let textContent = "";
+                            if (msg.fragments && Array.isArray(msg.fragments)) {
+                                msg.fragments.forEach(frag => {
+                                    // 只提取你的发言（REQUEST）和我的回复（RESPONSE），无视思考过程
+                                    if (frag.type === "REQUEST" || frag.type === "RESPONSE") {
+                                        if (frag.content) textContent += frag.content + "\n";
+                                    }
+                                });
+                            }
+                            textContent = textContent.trim();
+                            
+                            if (textContent) {
+                                newHistory.push({ 
+                                    role: msg.role === 'ASSISTANT' ? 'ai' : 'user', 
+                                    text: textContent 
+                                });
+                            }
+                        });
+                    } 
+                    // 兼容其他常见的简单格式
+                    else if (Array.isArray(importedData)) {
                         newHistory = importedData.map(msg => ({ role: msg.role === 'assistant' || msg.role === 'ai' ? 'ai' : 'user', text: msg.content || msg.text || '' }));
                     } else if (importedData.history && Array.isArray(importedData.history)) {
                         newHistory = importedData.history;
                     }
                     
                     if (newHistory.length > 0) {
-                        const newChat = { id: Date.now(), title: '导入的记忆', history: newHistory };
+                        const newChat = { id: Date.now(), title: importedData.title || '导入的专属记忆', history: newHistory };
                         allChats.unshift(newChat);
                         currentChatId = newChat.id;
                         renderHistoryList();
                         renderChat();
                         closeAllSheets();
-                        alert("记忆导入成功！");
+                        alert("记忆导入成功！林岸已经读完我们的对话啦！");
                     } else {
-                        alert("文件格式不对哦，没找到聊天记录。");
+                        alert("文件格式能读懂，但里面没找到聊天文本哦。");
                     }
                 } catch (err) {
+                    console.error(err);
                     alert("解析文件失败，请确保是有效的 JSON 文件。");
                 }
             };
