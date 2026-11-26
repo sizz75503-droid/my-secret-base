@@ -244,7 +244,14 @@
         <div class="sheet-title">连接 API</div>
         <div class="form-group"><label>API 地址</label><input type="text" value="https://api.deepseek.com/v1" readonly></div>
         <div class="form-group"><label>API Key</label><input type="password" id="api-key" placeholder="输入 sk- 开头的密钥"></div>
-        <div class="form-group"><label>模型</label><input type="text" id="api-model" value="deepseek-chat" readonly></div>
+        <div class="form-group">
+    <label>模型选择</label>
+    <select id="api-model" style="width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; background: #fff; color: #333; outline: none; font-size: 14px;">
+        <option value="deepseek-flash">DeepSeek Flash (极速回复/支持看图)</option>
+        <option value="deepseek-v4-pro">DeepSeek V4 Pro (最强旗舰)</option>
+        <option value="deepseek-chat">DeepSeek Chat (老版兼容)</option>
+    </select>
+</div>
         
         <div class="form-group" style="background: rgba(255,182,193,0.1); padding: 10px; border-radius: 10px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><label style="margin:0;">Temperature (随机性)</label><span style="font-size:13px; color:#d97a8e;" id="temp-val">0.9</span></div>
