@@ -148,10 +148,33 @@
         .avatar-upload-item { display: flex; flex-direction: column; align-items: center; gap: 8px;}
         .avatar-upload-item img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; cursor: pointer; background: #eee;}
         .avatar-upload-item span { font-size: 12px; color: #888; }
+        /* ===== 气泡 / 背景自定义 ===== */
+        :root { --ai-rgb: 230, 230, 232; --user-rgb: 255, 255, 255; --ai-alpha: 0.9; --user-alpha: 0.9; }
+        body.dark-mode { --ai-rgb: 51, 51, 51; --user-rgb: 68, 68, 68; }
+        .ai-message { background-color: rgba(var(--ai-rgb), var(--ai-alpha)); }
+        .user-message { background-color: rgba(var(--user-rgb), var(--user-alpha)); }
+
+        #bg-layer {
+            position: fixed; inset: -30px; z-index: 0; pointer-events: none;
+            background-size: cover; background-position: center;
+            transition: filter 0.35s ease;
+        }
+        .chat-container { position: relative; z-index: 1; }
+
+        .message-wrapper { display: flex; flex-direction: row; gap: 8px; max-width: 85%; align-items: flex-start; }
+        .ai-wrapper { align-self: flex-start; }
+        .user-wrapper { align-self: flex-end; flex-direction: row-reverse; align-items: flex-start; }
+        .msg-col { display: flex; flex-direction: column; min-width: 0; }
+        .user-wrapper .msg-col { align-items: flex-end; }
+        .msg-avatar {
+            width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
+            flex-shrink: 0; background: #e6e6e8; border: 1px solid rgba(0,0,0,0.06);
+        }
+        body.hide-avatar .msg-avatar { display: none; }
     </style>
 </head>
 <body>
-
+    <div id="bg-layer"></div>
     <div id="splash-screen">
         <div class="title-1">迷途漫漫</div>
         <div class="title-2">终有一归</div>
@@ -285,8 +308,32 @@
             <button class="btn-save" style="background:#eee; color:#333; margin-top:5px;" onclick="document.getElementById('upload-bg').click()">上传背景图</button>
             <button class="btn-save" style="background:#ffb6c1; color:#333; margin-top:5px;" onclick="resetBg()">恢复默认背景</button>
         </div>
-        <input type="file" id="upload-bg" accept="image/*" style="display:none;" onchange="handleBgUpload(event)">
-        <button class="btn-save" onclick="closeAllSheets()">应用</button>
+       <input type="file" id="upload-bg" accept="image/*" style="display:none;" onchange="handleBgUpload(event)">
+<div class="form-group" style="background: rgba(255,182,193,0.12); padding: 14px; border-radius: 12px;">
+    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+        <label style="margin:0;">林岸气泡不透明度</label>
+        <span style="font-size:13px; color:#d97a8e;" id="ai-op-val">90%</span>
+    </div>
+    <input type="range" id="ai-op" min="0" max="100" step="1" value="90" oninput="applyBubbleStyle()">
+
+    <div style="display:flex; justify-content:space-between; margin:14px 0 4px;">
+        <label style="margin:0;">游理气泡不透明度</label>
+        <span style="font-size:13px; color:#d97a8e;" id="user-op-val">90%</span>
+    </div>
+    <input type="range" id="user-op" min="0" max="100" step="1" value="90" oninput="applyBubbleStyle()">
+
+    <div style="display:flex; justify-content:space-between; margin:14px 0 4px;">
+        <label style="margin:0;">背景模糊度</label>
+        <span style="font-size:13px; color:#d97a8e;" id="bg-blur-val">0px</span>
+    </div>
+    <input type="range" id="bg-blur" min="0" max="20" step="1" value="0" oninput="applyBubbleStyle()">
+
+    <div class="toggle-row" style="margin:16px 0 0;">
+        <span>气泡旁显示头像</span>
+        <input type="checkbox" id="show-avatar" onchange="applyBubbleStyle()" style="width:20px; height:20px; accent-color:#d97a8e;">
+    </div>
+</div>
+<button class="btn-save" onclick="closeAllSheets()">应用</button>
     </div>
 
     <div class="bottom-sheet" id="archive-sheet" style="height: 75vh;">
@@ -341,21 +388,49 @@
         let savedUserAvatar = localStorage.getItem('youli_avatar') || defaultUserAvatar;
         let savedAiAvatar = localStorage.getItem('linan_avatar') || defaultAiAvatar;
         let savedBgImage = localStorage.getItem('chat_bg_image') || '';
+        // ===== 外观细节 =====
+        let lookConfig = { aiOp: 90, userOp: 90, bgBlur: 0, showAvatar: true };
+        try { const s = localStorage.getItem('linan_look'); if (s) lookConfig = Object.assign(lookConfig, JSON.parse(s)); } catch(e) {}
 
+        function applyBubbleStyle() {
+            lookConfig.aiOp = +document.getElementById('ai-op').value;
+            lookConfig.userOp = +document.getElementById('user-op').value;
+            lookConfig.bgBlur = +document.getElementById('bg-blur').value;
+            lookConfig.showAvatar = document.getElementById('show-avatar').checked;
+
+            document.documentElement.style.setProperty('--ai-alpha', lookConfig.aiOp / 100);
+            document.documentElement.style.setProperty('--user-alpha', lookConfig.userOp / 100);
+
+            const layer = document.getElementById('bg-layer');
+            if (layer) layer.style.filter = `blur(${lookConfig.bgBlur}px)`;
+
+            document.body.classList.toggle('hide-avatar', !lookConfig.showAvatar);
+
+            document.getElementById('ai-op-val').innerText = lookConfig.aiOp + '%';
+            document.getElementById('user-op-val').innerText = lookConfig.userOp + '%';
+            document.getElementById('bg-blur-val').innerText = lookConfig.bgBlur + 'px';
+
+            try { localStorage.setItem('linan_look', JSON.stringify(lookConfig)); } catch(e) {}
+        }
+
+        function syncLookControls() {
+            document.getElementById('ai-op').value = lookConfig.aiOp;
+            document.getElementById('user-op').value = lookConfig.userOp;
+            document.getElementById('bg-blur').value = lookConfig.bgBlur;
+            document.getElementById('show-avatar').checked = lookConfig.showAvatar;
+        }
         function applyAvatarsAndBg() {
             document.querySelectorAll('.display-user-avatar').forEach(img => img.src = savedUserAvatar);
             document.querySelectorAll('.display-ai-avatar').forEach(img => img.src = savedAiAvatar);
             document.getElementById('preview-user-avatar').src = savedUserAvatar;
             document.getElementById('preview-ai-avatar').src = savedAiAvatar;
             
-            if (savedBgImage) {
-                document.body.style.backgroundImage = `url(${savedBgImage})`;
-                document.body.style.backgroundSize = 'cover';
-                document.body.style.backgroundPosition = 'center';
-            } else {
-                document.body.style.backgroundImage = `radial-gradient(var(--bg-dot) 0.5px, transparent 0.5px)`;
-                document.body.style.backgroundSize = '20px 20px';
-            }
+                        document.body.style.backgroundImage = '';
+            const layer = document.getElementById('bg-layer');
+            if (layer) layer.style.backgroundImage = savedBgImage ? `url(${savedBgImage})` : 'none';
+            document.querySelectorAll('.msg-avatar').forEach(img => {
+                img.src = img.dataset.role === 'ai' ? savedAiAvatar : savedUserAvatar;
+            });
         }
         window.addEventListener('DOMContentLoaded', applyAvatarsAndBg);
 
@@ -670,9 +745,18 @@ renderMemories();
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        function addMessageToUI(role, text, save = true, imgUrl = null) {
+                function addMessageToUI(role, text, save = true, imgUrl = null) {
             const wrapper = document.createElement('div');
             wrapper.className = `message-wrapper ${role === 'ai' ? 'ai-wrapper' : 'user-wrapper'}`;
+
+            const avatar = document.createElement('img');
+            avatar.className = 'msg-avatar';
+            avatar.dataset.role = role;
+            avatar.src = role === 'ai' ? savedAiAvatar : savedUserAvatar;
+
+            const col = document.createElement('div');
+            col.className = 'msg-col';
+
             const bubble = document.createElement('div');
             bubble.className = `message ${role === 'ai' ? 'ai-message' : 'user-message'}`;
             
@@ -682,8 +766,11 @@ renderMemories();
             }
             if (imgUrl) { const img = document.createElement('img'); img.src = imgUrl; bubble.appendChild(img); }
             
-            wrapper.appendChild(bubble);
-            if (role === 'user') { const read = document.createElement('div'); read.className = 'read-status'; read.textContent = 'Read · Just now'; wrapper.appendChild(read); }
+            col.appendChild(bubble);
+            if (role === 'user') { const read = document.createElement('div'); read.className = 'read-status'; read.textContent = 'Read · Just now'; col.appendChild(read); }
+
+            wrapper.appendChild(avatar);
+            wrapper.appendChild(col);
             chatContainer.appendChild(wrapper);
             chatContainer.scrollTop = chatContainer.scrollHeight;
             
@@ -804,6 +891,8 @@ renderMemories();
         function clearMemory() { if(confirm("确定要清空所有记忆吗？")) { try{localStorage.removeItem('linan_all_chats');}catch(e){}; allChats = [{ id: Date.now(), title: '新的起点', history: [{role: 'ai', text: '记忆已清空，游理，我们重新开始吧。'}] }]; currentChatId = allChats[0].id; renderHistoryList(); renderChat(); closeAllSheets(); } }
 
         // 初始化
+        syncLookControls();
+        applyBubbleStyle();
         document.getElementById('model-display').innerText = apiConfig.model === 'deepseek-chat' ? 'DeepSeek V3' : 'DeepSeek R1';
         renderHistoryList(); renderChat();
     </script>
