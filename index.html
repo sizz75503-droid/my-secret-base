@@ -552,10 +552,7 @@ if (legacyMemory && legacyMemory.trim() && memories.length === 0) {
     saveMemories();
 }
 renderMemories();
-            longTermMemory = document.getElementById('long-term-memory').value.trim();
-            localStorage.setItem('linan_long_memory', longTermMemory);
-            alert("记忆库已保存！");
-        }
+
 
         function handleChatImport(e) {
             const file = e.target.files[0]; if (!file) return;
