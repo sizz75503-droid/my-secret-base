@@ -305,13 +305,26 @@
             <input type="file" id="import-chat" accept=".json" style="display:none;" onchange="handleChatImport(event)">
         </div>
 
-        <div id="tab-memory" class="tab-content" style="display:none;">
-            <div class="form-group">
-                <label style="color:#d97a8e; font-weight:bold;">给林岸的永久记忆：</label>
-                <textarea id="long-term-memory" placeholder="在这里写下你想让林岸永远记住的事情..."></textarea>
-            </div>
-            <button class="btn-save" onclick="saveLongTermMemory()">保存记忆库</button>
-        </div>
+       <div id="tab-memory" class="tab-content" style="display:none;">
+    <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <select id="mem-type" style="flex:0 0 86px; padding:10px; border:1px solid #eee; border-radius:10px; font-size:13px; background:#fff; color:#333;">
+            <option value="事实">事实</option>
+            <option value="偏好">偏好</option>
+            <option value="约定">约定</option>
+            <option value="近况">近况</option>
+        </select>
+        <input type="text" id="mem-input" placeholder="写一条，比如：游理不吃香菜"
+               style="flex:1; padding:10px; border:1px solid #eee; border-radius:10px; font-size:13px;">
+        <button onclick="addMemory()" style="padding:0 16px; border:none; border-radius:10px; background:#d97a8e; color:#fff; font-size:14px; cursor:pointer;">加</button>
+    </div>
+    <div id="mem-list" style="max-height:36vh; overflow-y:auto; margin-bottom:12px;"></div>
+    <div style="display:flex; gap:10px;">
+        <button class="btn-save" style="margin-top:0; background:#eee; color:#333;" onclick="exportMemories()">导出 JSON</button>
+        <button class="btn-save" style="margin-top:0; background:#eee; color:#333;" onclick="document.getElementById('import-mem').click()">导入 JSON</button>
+    </div>
+    <input type="file" id="import-mem" accept=".json" style="display:none;" onchange="importMemories(event)">
+    <div style="font-size:11px; color:#aaa; text-align:center; margin-top:10px;" id="mem-count">共 0 条</div>
+</div>
 
         <button class="btn-save btn-danger" onclick="clearMemory()" style="margin-top:20px;">清空本地所有记忆</button>
     </div>
@@ -454,9 +467,91 @@
             el.classList.add('active'); document.getElementById(tabId).style.display = 'block';
         }
 
-        let longTermMemory = localStorage.getItem('linan_long_memory') || '';
-        document.getElementById('long-term-memory').value = longTermMemory;
-        function saveLongTermMemory() {
+        // ===== 记忆区 v2：一条一条存 =====
+let memories = [];
+try { memories = JSON.parse(localStorage.getItem('linan_memories') || '[]'); } catch(e) { memories = []; }
+
+function saveMemories() {
+    try { localStorage.setItem('linan_memories', JSON.stringify(memories)); }
+    catch(e) { alert('存储失败，可能是浏览器空间满了。'); }
+}
+
+function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderMemories() {
+    const list = document.getElementById('mem-list');
+    list.innerHTML = '';
+    if (memories.length === 0) {
+        list.innerHTML = '<div style="text-align:center; color:#bbb; font-size:13px; padding:20px;">还没有记忆。写第一条吧。</div>';
+    }
+    memories.forEach(m => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex; align-items:flex-start; gap:8px; padding:10px 12px; margin-bottom:6px; background:rgba(255,255,255,0.7); border-radius:10px; font-size:13px; line-height:1.5;';
+        row.innerHTML = `<div style="flex:1; word-break:break-word;"><span style="color:#d97a8e; font-size:11px;">${m.type} · ${m.date}</span><br>${escapeHtml(m.text)}</div>`;
+        const del = document.createElement('span');
+        del.textContent = '×';
+        del.style.cssText = 'color:#ccc; font-size:20px; line-height:1; cursor:pointer; padding:0 2px;';
+        del.onclick = () => { memories = memories.filter(x => x.id !== m.id); saveMemories(); renderMemories(); };
+        row.appendChild(del);
+        list.appendChild(row);
+    });
+    const chars = memories.reduce((s, m) => s + m.text.length, 0);
+    document.getElementById('mem-count').innerText = `共 ${memories.length} 条 · 约 ${chars} 字`;
+}
+
+function addMemory() {
+    const input = document.getElementById('mem-input');
+    const text = input.value.trim();
+    if (!text) return;
+    const d = new Date();
+    const date = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    memories.unshift({ id: Date.now() + Math.random(), type: document.getElementById('mem-type').value, date, text });
+    input.value = '';
+    saveMemories(); renderMemories(); input.focus();
+}
+document.getElementById('mem-input').addEventListener('keypress', e => { if (e.key === 'Enter') addMemory(); });
+
+function exportMemories() {
+    const blob = new Blob([JSON.stringify(memories, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `linan-memories-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+}
+
+function importMemories(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        try {
+            const data = JSON.parse(ev.target.result);
+            if (!Array.isArray(data)) throw new Error();
+            const seen = new Set(memories.map(m => m.text));
+            let added = 0;
+            data.forEach(m => {
+                if (m && m.text && !seen.has(m.text)) {
+                    memories.push({ id: Date.now() + Math.random(), type: m.type || '事实', date: m.date || '—', text: m.text });
+                    seen.add(m.text); added++;
+                }
+            });
+            saveMemories(); renderMemories();
+            alert(`导入完成，新增 ${added} 条。`);
+        } catch(err) { alert('解析失败，请选择导出的记忆 JSON 文件。'); }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+}
+
+// 旧版那一大块文本，自动变成第一条，不丢
+const legacyMemory = localStorage.getItem('linan_long_memory');
+if (legacyMemory && legacyMemory.trim() && memories.length === 0) {
+    memories.push({ id: Date.now() + Math.random(), type: '事实', date: '旧版迁移', text: legacyMemory.trim() });
+    saveMemories();
+}
+renderMemories();
             longTermMemory = document.getElementById('long-term-memory').value.trim();
             localStorage.setItem('linan_long_memory', longTermMemory);
             alert("记忆库已保存！");
@@ -617,7 +712,15 @@
             const contextMessages = currentChat.history.slice(-10).map(msg => ({ role: msg.role === 'ai' ? 'assistant' : 'user', content: msg.text || '' }));
             
             let systemPrompt = '你叫林岸。她是游理。请用日常、简短、口语化、温暖且护短的语气回复她。如果要发多句话，请务必用换行符（\\n）隔开，像发微信一样一句一句地说。';
-            if (longTermMemory) { systemPrompt += `\n\n【关于游理的重要记忆】：\n${longTermMemory}`; }
+           if (memories.length > 0) {
+    const picked = []; let total = 0;
+    for (const m of memories) {
+        const line = `- [${m.date}] ${m.text}`;
+        if (total + line.length > 1200) break;
+        picked.push(line); total += line.length;
+    }
+    systemPrompt += `\n\n【关于游理的重要记忆】：\n${picked.join('\n')}`;
+}
             contextMessages.unshift({ role: 'system', content: systemPrompt });
 
             try {
@@ -655,23 +758,15 @@
 
                                     // 如果遇到换行符，就切分气泡
                                     if (content.includes('\n')) {
-                                        const parts = currentText.split('\n');
-                                        // 把换行前的文字放进当前气泡
-                                        if (parts[0].trim()) {
-                                            currentBubble.innerHTML = marked.parse(parts[0]);
-                                        } else {
-                                            currentBubble.style.display = 'none'; // 如果是空行，隐藏这个气泡
-                                        }
-                                        
-                                        // 如果换行后面还有字，新建一个气泡
-                                        if (parts[1] !== undefined && parts[1].trim() !== "") {
-                                            currentBubble = addMessageToUI('ai', '', false);
-                                            currentText = parts[1];
-                                            currentBubble.innerText = currentText;
-                                        } else {
-                                            currentBubble = addMessageToUI('ai', '', false);
-                                            currentText = "";
-                                        }
+    const parts = currentText.split('\n');
+    const tail = parts.pop();   // 最后一段还没说完，留着继续接流
+    parts.forEach(seg => {
+        if (seg.trim()) { currentBubble.innerHTML = marked.parse(seg); }
+        else { currentBubble.style.display = 'none'; }
+        currentBubble = addMessageToUI('ai', '', false);
+    });
+    currentText = tail;
+    currentBubble.innerText = currentText;
                                     } else {
                                         // 普通打字机效果
                                         currentBubble.innerText = currentText;
