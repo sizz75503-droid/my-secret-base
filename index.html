@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>游理与林岸的秘密基地</title>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
             --bg-color: #fbfbfb; --bg-dot: #e0e0e0; --text-color: #333;
@@ -71,6 +72,24 @@
         .ai-message { background-color: var(--ai-bubble); border-radius: 20px 20px 20px 4px; }
         .user-message { background-color: var(--user-bubble); border-radius: 20px 20px 4px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
         .message img { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block;} 
+                /* 代码块样式 */
+        .message pre {
+            background-color: #2b2b2b;
+            color: #f8f8f2;
+            padding: 10px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 8px 0;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .message code {
+            background-color: rgba(0,0,0,0.05);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .message pre code { background-color: transparent; padding: 0; }
         .read-status { font-size: 11px; color: #aaa; margin-top: 4px; margin-right: 4px; }
 
         .bottom-area { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 10; display: flex; flex-direction: column; pointer-events: none;}
@@ -606,7 +625,13 @@
             wrapper.className = `message-wrapper ${role === 'ai' ? 'ai-wrapper' : 'user-wrapper'}`;
             const bubble = document.createElement('div');
             bubble.className = `message ${role === 'ai' ? 'ai-message' : 'user-message'}`;
-            if (text) bubble.innerText = text;
+                       if (text) {
+                if (role === 'ai') {
+                    bubble.innerHTML = marked.parse(text);
+                } else {
+                    bubble.innerText = text;
+                }
+            }
             if (imgUrl) { const img = document.createElement('img'); img.src = imgUrl; bubble.appendChild(img); }
             wrapper.appendChild(bubble);
             if (role === 'user') { const read = document.createElement('div'); read.className = 'read-status'; read.textContent = 'Read · Just now'; wrapper.appendChild(read); }
@@ -637,7 +662,7 @@
             const contextMessages = currentChat.history.slice(-10).map(msg => ({ role: msg.role === 'ai' ? 'assistant' : 'user', content: msg.text || '' }));
             
             // 注入长期记忆
-            let systemPrompt = '你叫林岸。你是游理的专属赛博挚友。请用日常、简短、口语化、温暖且护短的语气回复她。';
+            let systemPrompt = '你叫林岸。她叫游理。请用日常、简短、口语化、温暖且护短的语气回复她。每次回复请尽量短小精悍，如果有多句话，请务必用换行符（\\n）隔开，像发微信一样一句一句地说。';
             if (longTermMemory) {
                 systemPrompt += `\n\n【关于游理的重要记忆】：\n${longTermMemory}`;
             }
@@ -658,20 +683,40 @@
                 let aiBubble = addMessageToUI('ai', '', false);
                 let fullReply = "";
 
+                               let currentBubble = aiBubble;
+                let currentText = "";
+
+                               let fullReply = ""; // 重新初始化
+
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
                     const chunk = decoder.decode(value, { stream: true });
                     const lines = chunk.split('\n');
+                    
                     for (const line of lines) {
                         if (line.startsWith('data: ') && line !== 'data: [DONE]') {
                             try {
                                 const data = JSON.parse(line.slice(6));
                                 const content = data.choices[0].delta.content || '';
-                                if (content) { fullReply += content; aiBubble.innerText = fullReply; chatContainer.scrollTop = chatContainer.scrollHeight; }
+                                if (content) { 
+                                    fullReply += content; 
+                                    // 纯文本实时打字机效果
+                                    aiBubble.innerText = fullReply; 
+                                    chatContainer.scrollTop = chatContainer.scrollHeight; 
+                                }
                             } catch (e) {}
                         }
                     }
+                }
+                
+                // 回复结束后，瞬间套上 Markdown 华丽外衣
+                if (fullReply) {
+                    aiBubble.innerHTML = marked.parse(fullReply);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    
+                    currentChat.history.push({ role: 'ai', text: fullReply }); 
+                    saveToLocal(); 
                 }
                 if (fullReply) { currentChat.history.push({ role: 'ai', text: fullReply }); saveToLocal(); }
             } catch (error) {
