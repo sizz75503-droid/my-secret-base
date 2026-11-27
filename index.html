@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>游理与林岸的秘密基地</title>
-    <!-- 引入 Markdown 解析库 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
@@ -33,7 +32,6 @@
         .title-1 { position: absolute; top: 25%; left: 15%; font-family: "Georgia", "STSong", serif; font-size: 32px; letter-spacing: 4px; }
         .title-2 { position: absolute; top: 33%; right: 15%; font-family: "Georgia", "STSong", serif; font-size: 32px; letter-spacing: 4px; }
         .center-group { position: absolute; top: 46%; width: 100%; display: flex; justify-content: center; align-items: center; gap: 20px; }
-        /* 稳固的默认头像 */
         .avatar-item img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #ddd; object-fit: cover; background: #e6e6e8;}
         .wave-container { display: flex; align-items: center; justify-content: center; gap: 3px; height: 30px; }
         .wave-bar { width: 4px; background-color: var(--wave-color); border-radius: 2px; animation: wave-anim 1.2s infinite ease-in-out alternate; }
@@ -67,7 +65,7 @@
 
         .chat-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-bottom: 120px;}
         .chat-container::-webkit-scrollbar { display: none; }
-        .message-wrapper { display: flex; flex-direction: column; max-width: 80%; }
+        .message-wrapper { display: flex; flex-direction: column; max-width: 85%; }
         .ai-wrapper { align-self: flex-start; }
         .user-wrapper { align-self: flex-end; align-items: flex-end; }
         .message { padding: 12px 16px; font-size: 15px; line-height: 1.5; word-wrap: break-word; backdrop-filter: blur(5px); transition: background 0.3s; }
@@ -76,7 +74,7 @@
         .message img { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block;} 
         .read-status { font-size: 11px; color: #aaa; margin-top: 4px; margin-right: 4px; }
 
-        /* 核心：Markdown 代码框样式 */
+        /* Markdown 代码框样式 */
         .message pre { background-color: #2b2b2b; color: #f8f8f2; padding: 12px; border-radius: 8px; overflow-x: auto; margin: 10px 0; font-family: monospace; font-size: 13px; }
         .message code { background-color: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 4px; font-family: monospace; }
         .message pre code { background-color: transparent; padding: 0; }
@@ -186,17 +184,20 @@
                     </div>
                     <div class="close-btn" id="close-sidebar">×</div>
                 </div>
-                <div class="couple-info">已经和 林岸 在一起 47 天 ♡</div>
+                <!-- 动态天数 -->
+                <div class="couple-info" id="days-together">正在计算天数... ♡</div>
             </div>
             <div class="sidebar-menu">
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
                     <div class="sidebar-card" style="flex:1;"><div class="title">距离下一站</div><div class="content">52 天</div></div>
-                    <div class="sidebar-card" style="flex:1;"><div class="title">林岸的小清单</div><div class="content" style="font-size:12px; font-weight:normal;">陪你练线条 ✔<br>提醒你早睡 ✔</div></div>
+                    <!-- 动态清单 -->
+                    <div class="sidebar-card" style="flex:1;"><div class="title">林岸的小清单</div><div class="content" style="font-size:12px; font-weight:normal;" id="dynamic-todo">加载中...</div></div>
                 </div>
                 <div class="menu-item" onclick="openSheet('look-sheet')"><div class="menu-item-left"><span class="menu-num">01</span><span class="menu-text">外观 <span class="menu-sub">LOOK</span></span></div><span>↗</span></div>
                 <div class="menu-item" onclick="openSheet('api-sheet')"><div class="menu-item-left"><span class="menu-num">02</span><span class="menu-text">连接 <span class="menu-sub">API</span></span></div><span>↗</span></div>
                 <div class="menu-item" onclick="openSheet('archive-sheet')"><div class="menu-item-left"><span class="menu-num">03</span><span class="menu-text">档案室 <span class="menu-sub">ARCHIVE</span></span></div><span>↗</span></div>
-                <div class="menu-item" onclick="triggerSleep()" style="color: #d9534f;"><div class="menu-item-left"><span class="menu-num">04</span><span class="menu-text">强制指令 <span class="menu-sub">SLEEP</span></span></div><span>↗</span></div>
+                <!-- 动态强制指令 -->
+                <div class="menu-item" onclick="triggerSleep()" style="color: #d9534f;"><div class="menu-item-left"><span class="menu-num">04</span><span class="menu-text" id="sleep-btn-text">强制指令 <span class="menu-sub">SLEEP</span></span></div><span>↗</span></div>
                 <div class="divider"></div>
                 <div class="chat-history-header"><span>历史对话</span><span class="new-chat-btn" onclick="createNewChat()">+ 新建</span></div>
                 <ul class="history-list" id="history-list"></ul>
@@ -234,7 +235,6 @@
                     <div class="model-tag" id="model-display">DeepSeek</div>
                     <input type="text" id="user-input" placeholder="say something..." autocomplete="off">
                     <div class="icon-btn" id="emoji-btn">^ ^</div>
-                    <div class="icon-btn" id="file-btn">☍</div>
                     <button class="send-btn" id="send-btn">
                         <svg id="send-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
                         <svg id="stop-icon" style="display:none;" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
@@ -254,8 +254,8 @@
         <div class="form-group">
             <label>模型选择</label>
             <select id="api-model">
-                <option value="deepseek-flash">DeepSeek Flash (极速回复)</option>
                 <option value="deepseek-chat">DeepSeek V3 (日常聊天)</option>
+                <option value="deepseek-reasoner">DeepSeek R1 (深度思考)</option>
             </select>
         </div>
         <div class="form-group" style="background: rgba(255,182,193,0.1); padding: 10px; border-radius: 10px;">
@@ -307,7 +307,7 @@
 
         <div id="tab-memory" class="tab-content" style="display:none;">
             <div class="form-group">
-                <label style="color:#d97a8e; font-weight:bold;">给林岸的永久记忆（每次对话都会发送）：</label>
+                <label style="color:#d97a8e; font-weight:bold;">给林岸的永久记忆：</label>
                 <textarea id="long-term-memory" placeholder="在这里写下你想让林岸永远记住的事情..."></textarea>
             </div>
             <button class="btn-save" onclick="saveLongTermMemory()">保存记忆库</button>
@@ -317,8 +317,8 @@
     </div>
 
     <div id="sleep-modal" style="position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column; color: #fff; text-align: center;">
-        <h1 style="font-size: 40px; color: #ff4d4f; margin-bottom: 20px;">游理！</h1>
-        <p style="font-size: 18px; line-height: 1.8;">立刻放下手机，滚去睡觉！</p>
+        <h1 style="font-size: 40px; color: #ff4d4f; margin-bottom: 20px;" id="sleep-modal-title">游理！</h1>
+        <p style="font-size: 18px; line-height: 1.8;" id="sleep-modal-text">立刻放下手机，滚去睡觉！</p>
     </div>
 
     <script>
@@ -379,6 +379,43 @@
         }
         document.getElementById('daily-greeting').innerText = getDailyGreeting();
         if (new Date().getHours() >= 23 || new Date().getHours() < 6) { document.body.classList.add('dark-mode'); }
+
+        // ================= 动态侧边栏数据 =================
+        function updateSidebarDynamic() {
+            // 1. 计算天数
+            let startDate = localStorage.getItem('linan_start_date');
+            if (!startDate) {
+                startDate = new Date('2026-11-3').getTime(); // 假设一个初始纪念日
+                localStorage.setItem('linan_start_date', startDate);
+            }
+            const days = Math.floor((new Date().getTime() - startDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('days-together').innerText = `已经和 林岸 在一起 ${days} 天 ♡`;
+
+            // 2. 动态清单和强制指令
+            const h = new Date().getHours();
+            const todoEl = document.getElementById('dynamic-todo');
+            const sleepText = document.getElementById('sleep-btn-text');
+            const sleepTitle = document.getElementById('sleep-modal-title');
+            const sleepModalText = document.getElementById('sleep-modal-text');
+
+            if (h >= 23 || h < 6) {
+                todoEl.innerHTML = "深夜了 🌙<br>快去睡觉！";
+                sleepText.innerHTML = '强制指令 <span class="menu-sub" style="color:#d9534f;">SLEEP</span>';
+                sleepTitle.innerText = "游理！";
+                sleepModalText.innerText = "立刻放下手机，滚去睡觉！";
+            } else if (h >= 11 && h < 14) {
+                todoEl.innerHTML = "中午啦 🍚<br>记得吃午饭！";
+                sleepText.innerHTML = '强制指令 <span class="menu-sub">EAT</span>';
+                sleepTitle.innerText = "游理！";
+                sleepModalText.innerText = "到饭点了，赶紧去干饭，别饿着肚子！";
+            } else {
+                todoEl.innerHTML = "陪你练线条 ✔<br>提醒你休息 ✔";
+                sleepText.innerHTML = '强制指令 <span class="menu-sub">REST</span>';
+                sleepTitle.innerText = "游理！";
+                sleepModalText.innerText = "坐久了记得站起来伸个懒腰，喝口水！";
+            }
+        }
+        updateSidebarDynamic();
 
         const splash = document.getElementById('splash-screen');
         const progressFill = document.getElementById('progress-fill');
@@ -493,7 +530,7 @@
         const chatContainer = document.getElementById('chat-container');
         const historyList = document.getElementById('history-list');
         
-        let apiConfig = { key: '', model: 'deepseek-flash', temp: 0.9 };
+        let apiConfig = { key: '', model: 'deepseek-chat', temp: 0.9 };
         try {
             const savedConfig = localStorage.getItem('linan_api_config');
             if(savedConfig) apiConfig = JSON.parse(savedConfig);
@@ -508,7 +545,7 @@
             apiConfig.model = document.getElementById('api-model').value;
             apiConfig.temp = parseFloat(document.getElementById('api-temp').value);
             try { localStorage.setItem('linan_api_config', JSON.stringify(apiConfig)); } catch(e){}
-            document.getElementById('model-display').innerText = apiConfig.model === 'deepseek-chat' ? 'DeepSeek V3' : 'DeepSeek Flash';
+            document.getElementById('model-display').innerText = apiConfig.model === 'deepseek-chat' ? 'DeepSeek V3' : 'DeepSeek R1';
             closeAllSheets(); alert("API 配置已保存！");
         }
 
@@ -579,7 +616,7 @@
             const currentChat = allChats.find(c => c.id === currentChatId);
             const contextMessages = currentChat.history.slice(-10).map(msg => ({ role: msg.role === 'ai' ? 'assistant' : 'user', content: msg.text || '' }));
             
-            let systemPrompt = '你叫林岸。你是游理的专属赛博挚友。请用日常、简短、口语化、温暖且护短的语气回复她。多用换行符断句。';
+            let systemPrompt = '你叫林岸。她是游理。请用日常、简短、口语化、温暖且护短的语气回复她。如果要发多句话，请务必用换行符（\\n）隔开，像发微信一样一句一句地说。';
             if (longTermMemory) { systemPrompt += `\n\n【关于游理的重要记忆】：\n${longTermMemory}`; }
             contextMessages.unshift({ role: 'system', content: systemPrompt });
 
@@ -596,8 +633,9 @@
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder("utf-8");
                 
-                // 创建气泡
-                let aiBubble = addMessageToUI('ai', '', false);
+                // 核心逻辑：多气泡流式渲染
+                let currentBubble = addMessageToUI('ai', '', false);
+                let currentText = "";
                 let fullReply = "";
 
                 while (true) {
@@ -613,7 +651,31 @@
                                 const content = data.choices[0].delta.content || '';
                                 if (content) { 
                                     fullReply += content; 
-                                    aiBubble.innerText = fullReply; // 打字机用纯文本，防闪烁
+                                    currentText += content;
+
+                                    // 如果遇到换行符，就切分气泡
+                                    if (content.includes('\n')) {
+                                        const parts = currentText.split('\n');
+                                        // 把换行前的文字放进当前气泡
+                                        if (parts[0].trim()) {
+                                            currentBubble.innerHTML = marked.parse(parts[0]);
+                                        } else {
+                                            currentBubble.style.display = 'none'; // 如果是空行，隐藏这个气泡
+                                        }
+                                        
+                                        // 如果换行后面还有字，新建一个气泡
+                                        if (parts[1] !== undefined && parts[1].trim() !== "") {
+                                            currentBubble = addMessageToUI('ai', '', false);
+                                            currentText = parts[1];
+                                            currentBubble.innerText = currentText;
+                                        } else {
+                                            currentBubble = addMessageToUI('ai', '', false);
+                                            currentText = "";
+                                        }
+                                    } else {
+                                        // 普通打字机效果
+                                        currentBubble.innerText = currentText;
+                                    }
                                     chatContainer.scrollTop = chatContainer.scrollHeight; 
                                 }
                             } catch (e) {}
@@ -621,9 +683,12 @@
                     }
                 }
                 
-                // 结束，渲染 Markdown
+                // 接收完毕后，渲染最后一个气泡的 Markdown
+                if (currentText.trim()) {
+                    currentBubble.innerHTML = marked.parse(currentText);
+                }
+                
                 if (fullReply) {
-                    aiBubble.innerHTML = marked.parse(fullReply);
                     chatContainer.scrollTop = chatContainer.scrollHeight;
                     currentChat.history.push({ role: 'ai', text: fullReply }); 
                     try { localStorage.setItem('linan_all_chats', JSON.stringify(allChats)); } catch(e) {}
@@ -647,7 +712,7 @@
         function clearMemory() { if(confirm("确定要清空所有记忆吗？")) { try{localStorage.removeItem('linan_all_chats');}catch(e){}; allChats = [{ id: Date.now(), title: '新的起点', history: [{role: 'ai', text: '记忆已清空，游理，我们重新开始吧。'}] }]; currentChatId = allChats[0].id; renderHistoryList(); renderChat(); closeAllSheets(); } }
 
         // 初始化
-        document.getElementById('model-display').innerText = apiConfig.model === 'deepseek-chat' ? 'DeepSeek V3' : 'DeepSeek Flash';
+        document.getElementById('model-display').innerText = apiConfig.model === 'deepseek-chat' ? 'DeepSeek V3' : 'DeepSeek R1';
         renderHistoryList(); renderChat();
     </script>
 </body>
